@@ -5,14 +5,25 @@
 
 ARG PG_MAJOR=16
 FROM ubuntu:22.04 AS vchord_builder
+ARG PG_MAJOR=16
+ARG VECTORCHORD_VERSION=0.4.3
+ARG TARGETARCH
 RUN apt-get update && apt-get install -y curl unzip
 WORKDIR /tmp
-# Use the latest VectorChord release for PG16 and x86_64
-RUN curl --fail -o vchord.zip -sSL \
-	https://github.com/tensorchord/VectorChord/releases/download/1.0.0/postgresql-16-vchord_1.0.0_x86_64-linux-gnu.zip \
-	&& unzip -d vchord_raw vchord.zip \
-	&& mkdir -p /vchord \
-	&& if [ -d "vchord_raw/pkglibdir" ]; then \
+# Download VectorChord release matching the requested version and architecture
+RUN set -eux; \
+	case "${TARGETARCH:-amd64}" in \
+	  amd64) arch_str='x86_64-linux-gnu' ;; \
+	  arm64) arch_str='aarch64-linux-gnu' ;; \
+	  aarch64) arch_str='aarch64-linux-gnu' ;; \
+	  *) arch_str='x86_64-linux-gnu' ;; \
+	esac; \
+	url="https://github.com/tensorchord/VectorChord/releases/download/${VECTORCHORD_VERSION}/postgresql-${PG_MAJOR}-vchord_${VECTORCHORD_VERSION}_${arch_str}.zip"; \
+	echo "Attempting to download $url"; \
+	curl --fail -o vchord.zip -sSL "$url"; \
+	unzip -d vchord_raw vchord.zip; \
+	mkdir -p /vchord; \
+	if [ -d "vchord_raw/pkglibdir" ]; then \
 		cp vchord_raw/pkglibdir/vchord.so /vchord/ && \
 		cp vchord_raw/sharedir/extension/vchord*.sql /vchord/ && \
 		cp vchord_raw/sharedir/extension/vchord.control /vchord/ ; \

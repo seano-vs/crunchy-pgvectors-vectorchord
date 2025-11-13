@@ -51,6 +51,10 @@ Notes
 - Adjust `versions.yaml` to change the matrix used by the included GitHub Actions workflow (.github/workflows/docker.yml).
 - The provided image is intended for migration/testing — review security, user, and backup procedures before running in production.
 
+Builder/asset note
+------------------
+- The `pgvecto.rs` (vectors) asset download used in the build is currently pinned to a specific package (pg16 amd64) in the builder stage. This choice keeps the build simple and predictable. If you need full multi-arch or multi-PG-major support for `pgvecto.rs`, we can update the builder to select the correct release asset per `PG_MAJOR` and `TARGETARCH` (recommended for production), but that is a slightly more invasive change.
+
 License and attribution
 -----------------------
 This repository assembles upstream binaries and uses logic referenced from the listed projects. Check the individual project licenses for distribution terms of the included binaries.
