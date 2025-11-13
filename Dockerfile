@@ -46,7 +46,8 @@ COPY --chown=root:root --chmod=755 --from=vchord_builder /vchord/vchord.so /usr/
 COPY --chown=root:root --chmod=755 --from=vchord_builder /vchord/vchord*.sql /usr/pgsql-${PG_MAJOR}/share/extension/
 COPY --chown=root:root --chmod=755 --from=vchord_builder /vchord/vchord.control /usr/pgsql-${PG_MAJOR}/share/extension/
 # pgvecto.rs
-COPY --chown=root:root --chmod=755 --from=pgvectors_builder /tmp/usr/lib/postgresql/${PG_MAJOR}/lib/vectors.so /usr/pgsql-${PG_MAJOR}/lib/
-COPY --chown=root:root --chmod=755 --from=pgvectors_builder /tmp/usr/share/postgresql/${PG_MAJOR}/extension/vectors* /usr/pgsql-${PG_MAJOR}/share/extension/
+# Copy any extracted pgvectors artifacts regardless of the exact postgresql/<major>/ path
+COPY --chown=root:root --chmod=755 --from=pgvectors_builder /tmp/usr/lib/postgresql/*/lib/vectors.so /usr/pgsql-${PG_MAJOR}/lib/
+COPY --chown=root:root --chmod=755 --from=pgvectors_builder /tmp/usr/share/postgresql/*/extension/vectors* /usr/pgsql-${PG_MAJOR}/share/extension/
 # Set default user to postgres (numeric ID 26)
 USER 26
